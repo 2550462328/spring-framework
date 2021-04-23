@@ -546,15 +546,15 @@ public class BeanDefinitionParserDelegate {
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
 			/**
 			 *1.跟上面类似
-			 *2.replaced method注入是spring动态改变bean里方法的实现。需要改变的方法，使用spring内原有其他类（需要继承接口org.springframework.beans.factory.support.MethodReplacer）的逻辑，替换这个方法。通过改变方法执行逻辑来动态改变方法。内部实现为使用cglib方法，重新生成子类，重写配置的方法和返回对象，达到动态改变的效果。
+			 *2.replaced method注入是spring动态改变bean里方法的实现。需要改变的方法，使用spring内原有其他类（需要继承接口org.springframework.beans.factory.support.MethodReplacer）的逻辑，替换这个方法。通过改变方法执行逻辑来动态改变方法。内部实现为使用cglib方法，重新生成子类，重写配置的方法和返回对象，达到动态改变的效果
 			 3.ReplaceOverride replaceOverride = new ReplaceOverride(name, callback);
 			 // Look for arg-type match elements.
 			 List<Element> argTypeEles = DomUtils.getChildElementsByTagName(replacedMethodEle, ARG_TYPE_ELEMENT);
-			 for (Element argTypeEle : argTypeEles) {
-			 String match = argTypeEle.getAttribute(ARG_TYPE_MATCH_ATTRIBUTE);
-			 match = (StringUtils.hasText(match) ? match : DomUtils.getTextValue(argTypeEle));
-			 if (StringUtils.hasText(match)) {
-			 replaceOverride.addTypeIdentifier(match);
+			   for (Element argTypeEle : argTypeEles) {
+			   String match = argTypeEle.getAttribute(ARG_TYPE_MATCH_ATTRIBUTE);
+			   match = (StringUtils.hasText(match) ? match : DomUtils.getTextValue(argTypeEle));
+			   if (StringUtils.hasText(match)) {
+			   replaceOverride.addTypeIdentifier(match);
 			 }
 			 }
 			 replaceOverride.setSource(extractSource(replacedMethodEle));

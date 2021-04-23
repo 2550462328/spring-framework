@@ -384,6 +384,8 @@ class ConstructorResolver {
 		boolean isStatic;
 
 		String factoryBeanName = mbd.getFactoryBeanName();
+		//首先获取工厂方法名
+		// 若工厂方法名不为空，则调用 beanFactory.getBean() 获取工厂对象
 		if (factoryBeanName != null) {
 			if (factoryBeanName.equals(beanName)) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
@@ -396,6 +398,7 @@ class ConstructorResolver {
 			factoryClass = factoryBean.getClass();
 			isStatic = false;
 		}
+		// 若为空，则可能为一个静态工厂，对于静态工厂则必须提供工厂类的全类名，同时设置 factoryBean = null
 		else {
 			// It's a static factory method on the bean class.
 			if (!mbd.hasBeanClass()) {
@@ -411,6 +414,8 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		// 然后确认构造参数
+		// 先从getBean中传递过来的参数获取
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
@@ -420,8 +425,10 @@ class ConstructorResolver {
 				factoryMethodToUse = (Method) mbd.resolvedConstructorOrFactoryMethod;
 				if (factoryMethodToUse != null && mbd.constructorArgumentsResolved) {
 					// Found a cached factory method...
+					// 尝试从mbd的历史构造缓存中获取
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
+						// 获取缓存中的构造函数参数的包可见字段
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}

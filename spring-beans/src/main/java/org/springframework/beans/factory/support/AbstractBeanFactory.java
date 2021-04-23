@@ -256,7 +256,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
-			// 判断单例bean是否是FactoryBean，如果是且beanName不是以“&”开头的话取getObject
+			// 判断单例bean是否是FactoryBean，如果是FactoryBean且beanName不是以“&”开头的话取getObject方法返回值
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -300,6 +300,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
+				// 待getBean的依赖Bean数组(xml配置中bean的depends-on属性)
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
@@ -308,7 +309,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
-						// 注册依赖bean
+						// 注册依赖bean（放到dependentMap中）
 						registerDependentBean(dep, beanName);
 						try {
 							// 实例化依赖bean
@@ -321,7 +322,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 				}
 
-				// Create bean instance.
+				// 创建singleton bean
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
@@ -335,19 +336,23 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+					// 判断单例bean是否是FactoryBean，如果是FactoryBean且beanName不是以“&”开头的话取getObject方法返回值
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
 
+				// 创建prototype bean
 				else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
+						// 针对每个线程 使用threadlocal 保存当前线程正在创建的prototype bean
 						beforePrototypeCreation(beanName);
 						prototypeInstance = createBean(beanName, mbd, args);
 					}
 					finally {
 						afterPrototypeCreation(beanName);
 					}
+					// 针对每个线程 移除threadlocal 中当前线程正在创建的prototype bean
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 

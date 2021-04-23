@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Mark Fisher
  * @see GenericBeanDefinition
  * @see RootBeanDefinition
- * @see ChildBeanDefinition
+ * @see ChildBeanDefinitionmethodOverrides
  */
 @SuppressWarnings("serial")
 public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccessor
